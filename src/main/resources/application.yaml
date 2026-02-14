@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: ecommerce
+
+  datasource:
+    url: "jdbc:mysql://localhost:3306/raj?useSSL=false&serverTimezone=UTC"
+    username: root
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+#  flyway:
+#    enabled: true
+#    locations: classpath:db/migration
+
+jwt:
+  secret: "55324746B788574854549684905683E6383A84390947493083240A7437"
+  expiration-ms: 3600000
+server:
+  port: 8080

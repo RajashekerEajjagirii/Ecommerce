@@ -1,0 +1,20 @@
+# If we are creating roles as  ROLE_ADMIN and ROLE_USER then UserInfoDetailsService creates authorities like "ROLE_ADMIN"/"ROLE_USER"
+ so use hasRole("ADMIN") in securityConfig and with @PreAuthorize("ADMIN").
+
+# If we are creating roles as  ADMIN and USER then UserInfoDetailsService creates authorities like "ADMIN"/"USER"
+  (not "ROLE_ADMIN"/"ROLE_USER"), so use hasAuthority("ADMIN")) in securityConfig and
+  with @PreAuthorize("hasAuthority('ADMIN')") at controller or method level.
+
+#Git commands for new Repository
+echo "# Ecommerce" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/RajashekerEajjagirii/Ecommerce.git
+git push -u origin main
+
+#Git commands for Existing Repository
+git remote add origin https://github.com/RajashekerEajjagirii/Ecommerce.git
+git branch -M main
+git push -u origin main
