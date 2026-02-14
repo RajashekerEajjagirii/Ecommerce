@@ -62,7 +62,7 @@ public class DomainConverter {
 
     public Product productDtoToProduct(@Valid ProductRequest request) {
 
-//        try {
+        try {
             Category category = categoryRepo.findByName(request.getCategory()).orElseThrow(() -> new RecordNotFoundException("Category not found!"));
 
             return Product.builder()
@@ -73,8 +73,8 @@ public class DomainConverter {
                     .category(category)
                     .active(true)
                     .build();
-//        } catch (Exception ex) {
-//            throw new BadRequestException("Error occurred due to the: "+ex);
-//        }
+        } catch (Exception ex) {
+            throw new BadRequestException("Error occurred due to the: "+ex);
+        }
     }
 }

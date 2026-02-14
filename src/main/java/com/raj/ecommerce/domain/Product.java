@@ -1,5 +1,6 @@
 package com.raj.ecommerce.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,8 @@ public class Product {
     private Boolean active;
     @ManyToOne
     @JoinColumn(name = "category_id")
+    /* If ur not using Response Dto*/
+    @JsonBackReference //This tells Jackson to serialize only one side of the relationship (Child)
     private Category category;
 
 }
