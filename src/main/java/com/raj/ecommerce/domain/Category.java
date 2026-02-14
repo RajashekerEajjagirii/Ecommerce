@@ -1,5 +1,6 @@
 package com.raj.ecommerce.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,5 +24,7 @@ public class Category {
 
     // One category can have many products
      @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+     /* If ur not using Response Dto*/
+     @JsonManagedReference //This tells Jackson to serialize only one side of the relationship (Parent)
      private Set<Product> products = new HashSet<>();
 }
