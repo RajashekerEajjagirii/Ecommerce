@@ -1,6 +1,7 @@
 package com.raj.ecommerce.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,7 @@ public class User {
     private Set<Role> roles=new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private Set<Address> addresses = new HashSet<>();
 }
 

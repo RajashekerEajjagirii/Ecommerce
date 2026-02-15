@@ -23,6 +23,7 @@ import java.util.List;
 
 @RestController
 //@PreAuthorize("hasAuthority('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/products")
 @Tag(name = "product-module")
 public class ProductController {

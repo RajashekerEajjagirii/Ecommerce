@@ -2,9 +2,7 @@ package com.raj.ecommerce.util;
 
 import com.raj.ecommerce.constants.Constants;
 import com.raj.ecommerce.domain.*;
-import com.raj.ecommerce.dto.AddressRequest;
-import com.raj.ecommerce.dto.ProductRequest;
-import com.raj.ecommerce.dto.RegisterRequest;
+import com.raj.ecommerce.dto.*;
 import com.raj.ecommerce.exception.BadRequestException;
 import com.raj.ecommerce.exception.RecordNotFoundException;
 import com.raj.ecommerce.repo.CategoryRepository;
@@ -76,5 +74,25 @@ public class DomainConverter {
         } catch (Exception ex) {
             throw new BadRequestException("Error occurred due to the: "+ex);
         }
+    }
+
+    public CartItemResponse cartItemToCartItemResponseDto(CartItem item) {
+
+        return CartItemResponse.builder()
+                .id(item.getId())
+                .productName(item.getProduct().getName())
+                .qty(item.getQty())
+                .priceSnapshot(item.getPriceSnapshot())
+                .build();
+    }
+
+    public Inventory inventoryDtoToInventory(@Valid InventoryRequest request) {
+        Product productInfo=productRepo.findById(request.getProductId()).orElseThrow(()->new RecordNotFoundException("Product was not available!"));
+        return Inventory.builder()
+                .product(productInfo)
+                .version(request.getVersion())
+                .quantity(request.getQuantity())
+                .warehouse(request.getWarehouse())
+                .build();
     }
 }

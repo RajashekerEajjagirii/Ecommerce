@@ -14,7 +14,7 @@ public class CartItem {
     @JoinColumn(name = "cart_id")
     private Cart cart;
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id",unique = true)
     private Product product;
     private Integer qty;
     private java.math.BigDecimal priceSnapshot;
