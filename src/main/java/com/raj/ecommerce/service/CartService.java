@@ -63,4 +63,10 @@ public class CartService {
 
         return cartItemRepo.save(item);
     }
+
+    public String removeItemById(Long Id) {
+        cartItemRepo.findById(Id).orElseThrow(()->new RecordNotFoundException("Item was not found!"));
+        cartItemRepo.deleteById(Id);
+        return "Item was removed from the Cart successfully!";
+    }
 }

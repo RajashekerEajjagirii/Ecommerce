@@ -1,6 +1,7 @@
 package com.raj.ecommerce.exception;
 
 import com.raj.ecommerce.dto.ExceptionResponse;
+import com.razorpay.RazorpayException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -43,6 +44,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ServerDownException.class)
     public ResponseEntity<ExceptionResponse> handleApplicationDown(ServerDownException ex){
         return new ResponseEntity<>(new ExceptionResponse("Something went wrong!",
+                ex.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.toString()),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(RazorpayException.class)
+    public ResponseEntity<ExceptionResponse> handleRazorpayException(RazorpayException ex){
+        return new ResponseEntity<>(new ExceptionResponse("RazorPay Server Down!",
                 ex.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR.toString()),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

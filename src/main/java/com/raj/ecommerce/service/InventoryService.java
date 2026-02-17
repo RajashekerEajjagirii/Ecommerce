@@ -38,4 +38,12 @@ public class InventoryService {
         inv.setQuantity(inv.getQuantity()-qty);
         inventoryRepo.save(inv);
     }
+
+    @Transactional
+    public void releaseStock(Long productId, Integer qty) {
+        Inventory inv=inventoryRepo.findByProductId(productId)
+                .orElseThrow(()->new RecordNotFoundException("No inventory!"));
+        inv.setQuantity(inv.getQuantity()+qty);
+        inventoryRepo.save(inv);
+    }
 }

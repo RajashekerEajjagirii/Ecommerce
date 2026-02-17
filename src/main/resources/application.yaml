@@ -22,3 +22,8 @@ jwt:
   expiration-ms: 3600000
 server:
   port: 8080
+
+razorpay:
+  key_id: "rzp_test_dAKAs7DSepBOrV"
+  key_secret: "3i8hADRH1FBawV@Mmc9s6tu4"
+#  razorpay.key.secret=3i8hADRH1FBawV@Mmc9s6tu4

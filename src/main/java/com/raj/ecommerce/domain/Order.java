@@ -20,6 +20,8 @@ public class Order {
     private java.math.BigDecimal totalAmount;
     private String status;
     private java.time.Instant createdAt = java.time.Instant.now();
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Shipment shipment;
     // getters/setters
 }
 
