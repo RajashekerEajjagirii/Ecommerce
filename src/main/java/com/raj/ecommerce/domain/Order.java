@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Entity
 @Table(name="orders")
 @AllArgsConstructor
@@ -22,6 +26,7 @@ public class Order {
     private java.time.Instant createdAt = java.time.Instant.now();
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Shipment shipment;
+    private LocalDateTime lastUpdated_ts;
     // getters/setters
 }
 

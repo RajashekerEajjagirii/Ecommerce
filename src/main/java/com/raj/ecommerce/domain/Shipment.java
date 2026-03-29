@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "shipments")
@@ -20,14 +23,24 @@ public class Shipment {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     private String carrier;
     private String trackingNumber;
     private String status;
 
-    @Column(name = "created_at", updatable = false, insertable = false)
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
+
+    private LocalDateTime expectedDelivery;
+
+    @OneToMany(mappedBy = "shipment",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<ShipmentTracker> trackingEvents=new ArrayList<>();
+
+    // Helper method to add a tracking event
+    public void addTrackingEvent(ShipmentTracker tracker){
+        tracker.setShipment(this);
+        this.trackingEvents.add(tracker);
+    }
 
 }

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-//@PreAuthorize("hasAuthority('ADMIN')")
+@PreAuthorize("hasAuthority('ADMIN')")
 //@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/products")
 @Tag(name = "product-module")

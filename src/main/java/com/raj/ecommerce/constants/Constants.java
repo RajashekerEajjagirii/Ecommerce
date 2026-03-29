@@ -19,7 +19,14 @@ public class Constants {
     };
 
     public static final String[] PUBLIC_ENDPOINTS={
-         "/api/auth/**"
+         "/api/auth/**",
+         // Demo/checkout endpoints (otherwise Spring Security returns 403/401 for unauthenticated browser calls).
+         "/api/payment/**",
+         // Static resources (useful if you open http://localhost:8080/index.html instead of a separate dev server).
+         "/",
+         "/index.html",
+         "/favicon.ico",
+         "/error"
     };
 
     public static final String[] USER_ACCESS_ENDPOINTS={
@@ -27,11 +34,13 @@ public class Constants {
     };
 
     public static final String[] ADMIN_ACCESS_ENDPOINTS={
-            "/api/products/**"
+//            "/api/products/**"
     };
 
     public static final String ROLE_TYPE="ROLE_ADMIN";
     public static final Long ROLE_ID=2L;
+    public static final String ORDER_STATUS_CREATED="CREATED";
     public static final String ORDER_STATUS_SHIPPED="SHIPPED";
+    public static final String CARRIER_TYPE="FedEX";
 
 }

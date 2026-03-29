@@ -11,12 +11,16 @@ import com.raj.ecommerce.repo.UserRepository;
 import com.raj.ecommerce.security.JwtTokenProvider;
 import com.raj.ecommerce.security.UserInfoDetailsService;
 import com.raj.ecommerce.util.DomainConverter;
+import com.raj.ecommerce.util.EmailBodyBuildTemplate;
+import com.raj.ecommerce.util.NumberGenerator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -29,6 +33,13 @@ public class AuthService {
 
     @Autowired
     private JwtTokenProvider tokenProvider;
+
+    @Autowired
+    private NumberGenerator numberGenerator;
+    @Autowired
+    private MailService mailService;
+    @Autowired
+    private EmailBodyBuildTemplate emailTemplate;
 
     @Value("${jwt.expiration-ms}")
     private long validityInMs;
@@ -49,7 +60,15 @@ public class AuthService {
         }
         try {
             User userInfo = domainConverter.registerDtoToUser(request, bCryptPasswordEncoder.encode(request.getPassword()));
-             userRepo.save(userInfo);
+            String emailOtp=numberGenerator.generate4DigitNumber();
+            userInfo.setOtp(Integer.parseInt(emailOtp));
+            String body= "Hello "+request.getUsername()+"\n\n Click on the below link to verify your Email account." +
+                    "\n 'http://127.0.0.1:8000/api/verify/{emailOtp}/' \nThanks\n Raj eCommerce Team";
+            String body1="<p>To verify your Email account. click it here: "
+                    + "<a href='http://127.0.0.1:8000/api/verify/{emailOtp}'>Link</a></p></br>";
+            mailService.sendHtmlEmail("rajashekereajjagiri@gmail.com","Account Verification-Raj eCommerce",
+                    emailTemplate.accountVerifyTemplate(request.getUsername(),emailOtp));
+            userRepo.save(userInfo);
              return "Your Successfully register with Us!";
 
         } catch (Exception ex) {

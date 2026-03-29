@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+<button id="checkout-button">Pay Now</button>
+
+<script>
+
+    const stripe = Stripe("pk_test_51TBMXN36RFaQPvtMbWU8CfN5r2c1I4D9HLz4eTljU00CpIoTkx1VcAj3lVFTWdS36GefpW799fZmCQwV5BZbTbvM00OzcE3qcQ"); // Replace with your Stripe publishable key
+
+    document.getElementById("checkout-button").addEventListener("click", () => {
+        fetch("http://localhost:8080/api/payment/create-checkout-session", { // Replace with your backend URL
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            // PaymentController expects an Order in the request body.
+            // totalAmount should be the smallest currency unit (e.g. paisa) for Stripe unit_amount.
+            body: JSON.stringify({ id: 123, totalAmount: 9000 }),
+        })
+            .then(async (response) => {
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(`HTTP ${response.status} ${response.statusText}: ${text}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                return stripe.redirectToCheckout({ sessionId: data.sessionId });
+            })
+            .then(result => {
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    });
+</script>
+</body>
+</html>

@@ -2,6 +2,20 @@ spring:
   application:
     name: ecommerce
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+
   datasource:
     url: "jdbc:mysql://localhost:3306/raj?useSSL=false&serverTimezone=UTC"
     username: root
@@ -27,3 +41,11 @@ razorpay:
   key_id: "rzp_test_dAKAs7DSepBOrV"
   key_secret: "3i8hADRH1FBawV@Mmc9s6tu4"
 #  razorpay.key.secret=3i8hADRH1FBawV@Mmc9s6tu4
+# pass it as env variables in edit configuration
+stripe:
+  secret_key: ${secret_key}
+  public_key: ${public_key}
+
+payment:
+  provider: ${payment_provider}
+
