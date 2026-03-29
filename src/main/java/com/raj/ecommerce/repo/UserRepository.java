@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     // Custom query to fetch roles by user email
      @Query("SELECT r FROM User u JOIN u.roles r WHERE u.email = :email")
      Set<Role> findRolesByEmail(@Param("email") String email);
+
+    Optional<User> findByOtp(int emailOtp);
 }

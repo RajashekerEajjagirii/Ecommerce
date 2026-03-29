@@ -17,10 +17,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -57,5 +54,10 @@ public class AuthController {
     public ResponseEntity<LogInResponse> logIn(@RequestBody @Valid LogInRequest request){
 
         return new ResponseEntity<>(authService.login(request),HttpStatus.OK);
+    }
+
+    @GetMapping("/verifyAccount/{emailOtp}")
+    public ResponseEntity<String> verifyAccount(@PathVariable int emailOtp){
+        return new ResponseEntity<>(authService.verifyAccount(emailOtp),HttpStatus.OK);
     }
 }

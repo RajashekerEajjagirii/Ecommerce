@@ -26,7 +26,7 @@ public class Constants {
          "/",
          "/index.html",
          "/favicon.ico",
-         "/error"
+         "/error", "/api/tracking/**"
     };
 
     public static final String[] USER_ACCESS_ENDPOINTS={

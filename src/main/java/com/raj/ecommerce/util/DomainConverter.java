@@ -5,16 +5,14 @@ import com.raj.ecommerce.domain.*;
 import com.raj.ecommerce.dto.*;
 import com.raj.ecommerce.exception.BadRequestException;
 import com.raj.ecommerce.exception.RecordNotFoundException;
-import com.raj.ecommerce.repo.CategoryRepository;
-import com.raj.ecommerce.repo.ProductRepository;
-import com.raj.ecommerce.repo.RoleRepository;
-import com.raj.ecommerce.repo.UserRepository;
+import com.raj.ecommerce.repo.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -29,6 +27,8 @@ public class DomainConverter {
     private CategoryRepository categoryRepo;
     @Autowired
     private ProductRepository productRepo;
+    @Autowired
+    private InventoryRepository inventoryRepository;
 
     public  User registerDtoToUser(RegisterRequest request,String password){
 
@@ -87,12 +87,30 @@ public class DomainConverter {
     }
 
     public Inventory inventoryDtoToInventory(@Valid InventoryRequest request) {
+        // Verifying product details in database
         Product productInfo=productRepo.findById(request.getProductId()).orElseThrow(()->new RecordNotFoundException("Product was not available!"));
-        return Inventory.builder()
-                .product(productInfo)
-                .version(request.getVersion())
-                .quantity(request.getQuantity())
-                .warehouse(request.getWarehouse())
+        // verifying product record in Inventory
+        Optional<Inventory> inventory=inventoryRepository.findByProductId(request.getProductId());
+        if(inventory.isEmpty()) {
+            return Inventory.builder()
+                    .product(productInfo)
+                    .version(request.getVersion())
+                    .quantity(request.getQuantity())
+                    .warehouse(request.getWarehouse())
+                    .build();
+        }else{
+            inventory.get().setQuantity(request.getQuantity());
+            return inventory.get();
+        }
+    }
+
+    public TrackerResponse trackerToTrackerResponse(ShipmentTracker trackInfo) {
+        return TrackerResponse.builder()
+                .trackingNumber(trackInfo.getTrackingNumber())
+                .eventType(trackInfo.getEventType())
+                .location(trackInfo.getLocation())
+                .remarks(trackInfo.getRemarks())
+                .eventTime(trackInfo.getEventTime())
                 .build();
     }
 }

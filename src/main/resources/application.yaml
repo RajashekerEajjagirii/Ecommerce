@@ -49,3 +49,7 @@ stripe:
 payment:
   provider: ${payment_provider}
 
+raj-ecommerce:
+  baseUri: ${base_uri:http://localhost:8080}
+  accountVerifyUri: /api/auth/verifyAccount/{emailOtp}
+  trackDetailsUri: /api/tracking/{trackingNumber}

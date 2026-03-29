@@ -20,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -40,6 +41,8 @@ public class AuthService {
     private MailService mailService;
     @Autowired
     private EmailBodyBuildTemplate emailTemplate;
+    @Autowired
+    private UserRepository userRepository;
 
     @Value("${jwt.expiration-ms}")
     private long validityInMs;
@@ -62,10 +65,6 @@ public class AuthService {
             User userInfo = domainConverter.registerDtoToUser(request, bCryptPasswordEncoder.encode(request.getPassword()));
             String emailOtp=numberGenerator.generate4DigitNumber();
             userInfo.setOtp(Integer.parseInt(emailOtp));
-            String body= "Hello "+request.getUsername()+"\n\n Click on the below link to verify your Email account." +
-                    "\n 'http://127.0.0.1:8000/api/verify/{emailOtp}/' \nThanks\n Raj eCommerce Team";
-            String body1="<p>To verify your Email account. click it here: "
-                    + "<a href='http://127.0.0.1:8000/api/verify/{emailOtp}'>Link</a></p></br>";
             mailService.sendHtmlEmail("rajashekereajjagiri@gmail.com","Account Verification-Raj eCommerce",
                     emailTemplate.accountVerifyTemplate(request.getUsername(),emailOtp));
             userRepo.save(userInfo);
@@ -94,5 +93,18 @@ public class AuthService {
             throw new BadRequestException("Service unavailable,give a try later! "+ex);
         }
 
+    }
+
+    public String verifyAccount(int emailOtp) {
+        try{
+           Optional<User> user=userRepository.findByOtp(emailOtp);
+           if(user.isPresent()){
+               user.get().setVerified(true);
+               userRepo.save(user.get());
+           }
+           return "Your account was verified successfully!";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

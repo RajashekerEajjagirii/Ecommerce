@@ -2,6 +2,7 @@ package com.raj.ecommerce.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class ShipmentTracker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +26,6 @@ public class ShipmentTracker {
     private String location;
     private String remarks;
     private LocalDateTime eventTime;
+
+
 }
