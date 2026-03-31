@@ -10,11 +10,13 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service("stripeGateway")
+@ConditionalOnProperty(name = "payment.provider", havingValue = "stripe")
 public class StripeService implements PaymentGateway {
 
     public StripeService( @Value("${stripe.secret_key}") String secretKey){

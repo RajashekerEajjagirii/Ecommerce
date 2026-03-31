@@ -65,7 +65,7 @@ public class AuthService {
             User userInfo = domainConverter.registerDtoToUser(request, bCryptPasswordEncoder.encode(request.getPassword()));
             String emailOtp=numberGenerator.generate4DigitNumber();
             userInfo.setOtp(Integer.parseInt(emailOtp));
-            mailService.sendHtmlEmail("rajashekereajjagiri@gmail.com","Account Verification-Raj eCommerce",
+            mailService.sendHtmlEmail(request.getEmail(),"Account Verification-Raj eCommerce",
                     emailTemplate.accountVerifyTemplate(request.getUsername(),emailOtp));
             userRepo.save(userInfo);
              return "Your Successfully register with Us!";

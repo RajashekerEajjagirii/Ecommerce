@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    # Keep tests hermetic: no dependency on a local MySQL instance.
+    url: jdbc:h2:mem:ecommerce_test;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+  mail:
+    # Prevent test failures due to missing env vars or external SMTP.
+    host: localhost
+    port: 25
+    username: ""
+    password: ""
+
+payment:
+  provider: razorpay
+

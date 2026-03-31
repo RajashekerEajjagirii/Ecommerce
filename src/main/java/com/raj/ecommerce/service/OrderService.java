@@ -141,7 +141,7 @@ public class OrderService {
             inventoryService.releaseStock(item.getProduct().getId(),item.getQty());
         }
         String msg= "Hello "+order.getUser().getUsername()+"\n your order payment was failed having rupees of "+order.getTotalAmount()+". \n can you please try again later. \nThanks,\n Team Raj eCommerce";
-        mailService.sendEmail("rajashekereajjagiri@gmail.com","Order Payment failure Information",
+        mailService.sendEmail(order.getUser().getEmail(),"Order Payment failure Information",
                 emailTemplate.orderFailureTemplate(order.getUser().getUsername(),order.getTotalAmount()));
         throw new ServerDownException("Exception occurred while performing payment");
     }
@@ -149,7 +149,7 @@ public class OrderService {
     private OrderResponse toOrderResponse(Order order, String message) {
         String msg= "Hello "+order.getUser().getUsername()+"\n  "+message+" with payment of Rupees "+order.getTotalAmount()+" INR \n   you can find the shipment details by following tracking number: "+
                 order.getShipment().getTrackingNumber()+". \nThanks,\n Team Raj eCommerce";
-        mailService.sendHtmlEmail("rajashekereajjagiri@gmail.com","Order Placed Information",
+        mailService.sendHtmlEmail(order.getUser().getEmail(),"Order Placed Information",
                 emailTemplate.orderSuccessTemplate(order.getUser().getUsername(),order.getTotalAmount(),order.getShipment().getTrackingNumber()));
         return OrderResponse.builder()
                 .id(order.getId())

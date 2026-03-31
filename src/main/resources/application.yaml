@@ -50,6 +50,6 @@ payment:
   provider: ${payment_provider}
 
 raj-ecommerce:
-  baseUri: ${base_uri:http://localhost:8080}
+  baseUri: ${base_uri}
   accountVerifyUri: /api/auth/verifyAccount/{emailOtp}
   trackDetailsUri: /api/tracking/{trackingNumber}
