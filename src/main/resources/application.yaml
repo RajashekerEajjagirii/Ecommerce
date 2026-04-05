@@ -1,6 +1,10 @@
 spring:
   application:
     name: ecommerce
+  cache:
+    # Default to local in-memory cache so the app works without Redis.
+    # Set `SPRING_CACHE_TYPE=redis` to enable Redis-backed caching.
+    type: simple
 
   mail:
     host: smtp.gmail.com
@@ -13,7 +17,9 @@ spring:
           auth: true
           starttls:
             enable: true
-
+  redis:
+    host: localhost
+    port: 6379
 
 
   datasource:
@@ -36,6 +42,11 @@ jwt:
   expiration-ms: 3600000
 server:
   port: 8080
+
+logging:
+  level:
+    org.springframework.cache: TRACE
+    org.springframework.cache.interceptor: TRACE
 
 razorpay:
   key_id: "rzp_test_dAKAs7DSepBOrV"
