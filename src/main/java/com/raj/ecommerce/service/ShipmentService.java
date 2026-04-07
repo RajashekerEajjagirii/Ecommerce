@@ -4,6 +4,8 @@ import com.raj.ecommerce.constants.Constants;
 import com.raj.ecommerce.domain.Order;
 import com.raj.ecommerce.domain.Shipment;
 import com.raj.ecommerce.domain.ShipmentTracker;
+import com.raj.ecommerce.domain.mongo.MongoOrder;
+import com.raj.ecommerce.domain.mongo.ShipmentInfo;
 import com.raj.ecommerce.dto.TrackerRequest;
 import com.raj.ecommerce.dto.TrackerResponse;
 import com.raj.ecommerce.exception.BadRequestException;

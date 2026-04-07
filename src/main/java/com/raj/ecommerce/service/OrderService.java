@@ -2,6 +2,10 @@ package com.raj.ecommerce.service;
 
 import com.raj.ecommerce.constants.Constants;
 import com.raj.ecommerce.domain.*;
+import com.raj.ecommerce.domain.mongo.MongoOrder;
+import com.raj.ecommerce.domain.mongo.PaymentInfo;
+import com.raj.ecommerce.domain.mongo.ProductInfo;
+import com.raj.ecommerce.domain.mongo.ShipmentInfo;
 import com.raj.ecommerce.dto.OrderResponse;
 import com.raj.ecommerce.dto.PaymentRequest;
 import com.raj.ecommerce.dto.PaymentResponse;
@@ -15,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +48,9 @@ public class OrderService {
     @Autowired
     private EmailBodyBuildTemplate emailTemplate;
 
+    @Autowired
+    private OrderMongoRepository orderMongoRepository;
+
     @Transactional
     public OrderResponse placeOrder(User user) {
         try {
@@ -62,6 +70,9 @@ public class OrderService {
             // Create order
             Order order = new Order();
             order.setUser(user);
+            // create order instance for mongo collection
+            MongoOrder mongoOrder=new MongoOrder();
+            mongoOrder.setUserId(user.getId());
             //calculating total amount of items
             BigDecimal totalAmount = items.stream()
                     .map(item -> item.getPriceSnapshot().multiply(BigDecimal.valueOf(item.getQty())))
@@ -70,6 +81,7 @@ public class OrderService {
             order.setStatus("PENDING_PAYMENT");
             order = orderRepo.save(order);
             int itemsCount = 0;
+            List<ProductInfo> productInfoList=new ArrayList<>();
             // preparing order items
             for (CartItem ci : items) {
                 OrderItem oi = new OrderItem();
@@ -78,9 +90,16 @@ public class OrderService {
                 oi.setQty(ci.getQty());
                 itemsCount += ci.getQty();
                 oi.setPrice(ci.getPriceSnapshot());
+                // preparing Mongo
+                ProductInfo productInfo=new ProductInfo();
+                productInfo.setName(ci.getProduct().getName());
+                productInfo.setProductId(ci.getProduct().getId());
+                productInfo.setQuantity(ci.getQty());
+                productInfo.setPrice(ci.getProduct().getPrice());
+                productInfoList.add(productInfo);
                 orderItemRepo.save(oi);
             }
-
+            mongoOrder.setProducts(productInfoList);
             // Clear Cart
             cartItemRepo.deleteAll(items);
 
@@ -98,12 +117,27 @@ public class OrderService {
             if (paymentResponse != null) {
 
                 // saving payment details to db
-                handlePaymentSuccess(order.getId(), paymentResponse);
+                handlePaymentSuccess(order.getId(), paymentResponse,mongoOrder);
 
                 //Initiating Shipment
-                order.setShipment(shipmentService.createShipment(order));
+                Shipment shipment=shipmentService.createShipment(order);
+                //preparing shipmentInfo for mongodb
+                ShipmentInfo shipmentInfo=new ShipmentInfo();
+                shipmentInfo.setShipmentId(shipment.getId());
+                shipmentInfo.setTrackingNumber(shipment.getTrackingNumber());
+                shipmentInfo.setCarrier(shipment.getCarrier());
+                shipmentInfo.setStatus(shipment.getStatus());
+                mongoOrder.setShipment(shipmentInfo);
+
+                order.setShipment(shipment);
                 order.setStatus(Constants.ORDER_STATUS_CREATED);
                 orderRepo.save(order);
+
+                //saving to mongoDb
+                mongoOrder.setOrderId(order.getId());
+                mongoOrder.setPrice(order.getTotalAmount());
+                orderMongoRepository.save(mongoOrder);
+
                 message = "Your order was placed successfully";
             } else {
                 // Payment Failure scenario
@@ -117,17 +151,25 @@ public class OrderService {
     }
 
     @Transactional
-    public void handlePaymentSuccess(Long orderId,PaymentResponse paymentResponse){
+    public void handlePaymentSuccess(Long orderId, PaymentResponse paymentResponse, MongoOrder mongoOrder){
         Order order=orderRepo.findById(orderId).orElseThrow();
         order.setStatus("PAID");
         orderRepo.save(order);
-        Payment paymentInfo=new Payment();
-        paymentInfo.setOrder(order);
-        paymentInfo.setGatewayTxnId(paymentResponse.getGatewayTxnId());
+        Payment paymentDetails=new Payment();
+        paymentDetails.setOrder(order);
+        paymentDetails.setGatewayTxnId(paymentResponse.getGatewayTxnId());
+        paymentDetails.setStatus(paymentResponse.getStatus());
+        paymentDetails.setAmount(order.getTotalAmount());
+        paymentDetails.setCreatedAt(new Date().toInstant());
+        // preparing info for mongo
+        PaymentInfo paymentInfo=new PaymentInfo();
+        paymentInfo.setPaymentId(paymentResponse.getGatewayTxnId());
+        paymentInfo.setMethod("Card");
         paymentInfo.setStatus(paymentResponse.getStatus());
         paymentInfo.setAmount(order.getTotalAmount());
-        paymentInfo.setCreatedAt(new Date().toInstant());
-        paymentRepo.save(paymentInfo);
+        mongoOrder.setPayment(paymentInfo);
+
+        paymentRepo.save(paymentDetails);
     }
 
     @Transactional

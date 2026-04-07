@@ -20,7 +20,11 @@ spring:
   redis:
     host: localhost
     port: 6379
-
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: ecommerce
 
   datasource:
     url: "jdbc:mysql://localhost:3306/raj?useSSL=false&serverTimezone=UTC"
