@@ -1,9 +1,7 @@
 package com.raj.ecommerce.controller;
 
-import com.raj.ecommerce.domain.CartItem;
 import com.raj.ecommerce.domain.User;
 import com.raj.ecommerce.dto.CartItemRequest;
-import com.raj.ecommerce.dto.CartItemResponse;
 import com.raj.ecommerce.security.UserInfoDetailsService;
 import com.raj.ecommerce.service.CartService;
 import com.raj.ecommerce.util.DomainConverter;
@@ -34,14 +32,14 @@ public class CartController {
             key = "#root.args[1].name",
             condition = "#root.args[1] != null && #root.args[1].name != null"
     )
-    public ResponseEntity<CartItemResponse> addItem(@RequestBody @Valid CartItemRequest request, Principal principal){
+    public ResponseEntity<String> addItem(@RequestBody @Valid CartItemRequest request, Principal principal){
         if (principal == null || principal.getName() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         User user=userInfoDetailsService.findByEmail(principal.getName());
-        CartItem item=cartService.addItem(user, request.getProductId(), request.getQty());
-//        domainConverter.cartItemToCartItemResponseDto(item);
-        return new ResponseEntity<>(domainConverter.cartItemToCartItemResponseDto(item), HttpStatus.CREATED);
+        // CartItem item=cartService.addItem(user, request.getProductId(), request.getQty());
+        //domainConverter.cartItemToCartItemResponseDto(item);
+        return new ResponseEntity<>(cartService.addItem(user, request.getProductId(), request.getQty()), HttpStatus.CREATED);
     }
 
     @GetMapping

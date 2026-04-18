@@ -6,6 +6,7 @@ import com.raj.ecommerce.domain.Product;
 import com.raj.ecommerce.domain.User;
 import com.raj.ecommerce.dto.CartItemResponse;
 import com.raj.ecommerce.exception.RecordNotFoundException;
+import com.raj.ecommerce.exception.ServerDownException;
 import com.raj.ecommerce.repo.CartItemRepository;
 import com.raj.ecommerce.repo.CartRepository;
 import com.raj.ecommerce.repo.ProductRepository;
@@ -13,7 +14,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +30,8 @@ public class CartService {
     private CartItemRepository cartItemRepo;
     @Autowired
     private ProductRepository productRepo;
+    @Autowired
+    private InventoryService inventoryService;
 
     public Cart getOrCreateCart(User user){
        return cartRepo.findByUserId(user.getId()).orElseGet(()->{
@@ -37,7 +43,7 @@ public class CartService {
 
     public Set<CartItemResponse> getUserCart(User user){
         Cart cart=getOrCreateCart(user);
-        List<CartItem> cartList= cartItemRepo.findAllBycartId(cart.getId()).orElseThrow(
+        List<CartItem> cartList= cartItemRepo.findAllByCartId(cart.getId()).orElseThrow(
                 ()->new RecordNotFoundException("You don't have items,Cart was empty!"));
         return cartList.stream()
                 .map(item->{
@@ -46,22 +52,41 @@ public class CartService {
                             .productName(item.getProduct().getName())
                             .qty(item.getQty())
                             .priceSnapshot(item.getPriceSnapshot())
+                           .isInStock(inventoryService.isStockAvailable(item.getProduct().getId(),item.getQty()))
+                           .createdTs(item.getCreatedTs())
                             .build();
                 }).collect(Collectors.toSet());
 
     }
 
     @Transactional
-    public CartItem addItem(User user,Long productId,int qty){
-        Cart cart=getOrCreateCart(user);
-        Product product=productRepo.findById(productId).orElseThrow();
-        CartItem item=new CartItem();
-        item.setCart(cart);
-        item.setProduct(product);
-        item.setQty(qty);
-        item.setPriceSnapshot(product.getPrice());
-
-        return cartItemRepo.save(item);
+    public String addItem(User user,Long productId,int qty){
+        try {
+            Cart cart = getOrCreateCart(user);
+            Product product = productRepo.findById(productId).orElseThrow();
+            Optional<CartItem> existItem = cartItemRepo.findByProductId(productId);
+            if (existItem.isPresent()) {
+                qty += existItem.get().getQty();
+                existItem.get().setQty(qty);
+                existItem.get().setPriceSnapshot(product.getPrice().multiply(BigDecimal.valueOf(qty)));
+                existItem.get().setInStock(inventoryService.isStockAvailable(product.getId(),qty));
+                existItem.get().setUpdatedTs(LocalDateTime.now());
+                cartItemRepo.save(existItem.get());
+                return "Your requested quantity of products are added to the Cart";
+            } else {
+                CartItem item = new CartItem();
+                item.setCart(cart);
+                item.setProduct(product);
+                item.setQty(qty);
+                item.setPriceSnapshot(product.getPrice());
+                item.setInStock(inventoryService.isStockAvailable(product.getId(),qty));
+                item.setCreatedTs(LocalDateTime.now());
+                cartItemRepo.save(item);
+                return "Your product was added to the Cart";
+            }
+        } catch (Exception e) {
+            throw new ServerDownException("Exception occurred while adding item to the Cart: "+e);
+        }
     }
 
     public String removeItemById(Long Id) {

@@ -3,6 +3,8 @@ package com.raj.ecommerce.domain;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="cart_items")
 @Data
@@ -18,5 +20,8 @@ public class CartItem {
     private Product product;
     private Integer qty;
     private java.math.BigDecimal priceSnapshot;
+    private boolean isInStock;
+    private LocalDateTime createdTs;
+    private LocalDateTime updatedTs;
     // getters/setters
 }

@@ -8,10 +8,12 @@ import com.raj.ecommerce.repo.InventoryRepository;
 import com.raj.ecommerce.util.DomainConverter;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class InventoryService {
 
     @Autowired
@@ -45,5 +47,16 @@ public class InventoryService {
                 .orElseThrow(()->new RecordNotFoundException("No inventory!"));
         inv.setQuantity(inv.getQuantity()+qty);
         inventoryRepo.save(inv);
+    }
+
+    public boolean isStockAvailable(Long productId, Integer qty){
+        try{
+            Inventory inv=inventoryRepo.findByProductId(productId)
+                    .orElseThrow(()->new RecordNotFoundException("No inventory found"));
+            return inv.getQuantity() >= qty;
+        } catch (Exception e) {
+            log.error("Stock not available!");
+            return false;
+        }
     }
 }

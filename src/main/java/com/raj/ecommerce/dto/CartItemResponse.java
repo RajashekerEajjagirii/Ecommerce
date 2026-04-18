@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,4 +18,6 @@ public class CartItemResponse {
     private String productName;
     private int qty;
     private BigDecimal priceSnapshot;
+    private boolean isInStock;
+    private LocalDateTime createdTs;
 }
