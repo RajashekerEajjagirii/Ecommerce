@@ -95,11 +95,11 @@ public class DomainConverter {
             return Inventory.builder()
                     .product(productInfo)
                     .version(request.getVersion())
-                    .quantity(request.getQuantity())
+                    .stock(request.getQuantity())
                     .warehouse(request.getWarehouse())
                     .build();
         }else{
-            inventory.get().setQuantity(request.getQuantity());
+            inventory.get().setStock(request.getQuantity());
             return inventory.get();
         }
     }

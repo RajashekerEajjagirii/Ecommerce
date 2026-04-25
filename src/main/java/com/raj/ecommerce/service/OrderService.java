@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -78,8 +79,10 @@ public class OrderService {
                     .map(item -> item.getPriceSnapshot().multiply(BigDecimal.valueOf(item.getQty())))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             order.setTotalAmount(totalAmount);
-            order.setStatus("PENDING_PAYMENT");
+            order.setStatus(Constants.ORDER_STATUS_CREATED);
             order = orderRepo.save(order);
+            mongoOrder.setOrderId(order.getId());
+            orderMongoRepository.save(mongoOrder);
             int itemsCount = 0;
             List<ProductInfo> productInfoList=new ArrayList<>();
             // preparing order items
@@ -99,6 +102,7 @@ public class OrderService {
                 productInfoList.add(productInfo);
                 orderItemRepo.save(oi);
             }
+            order = orderRepo.save(order);
             mongoOrder.setProducts(productInfoList);
             // Clear Cart
             cartItemRepo.deleteAll(items);
@@ -110,72 +114,78 @@ public class OrderService {
             paymentRequest.setQuantity(itemsCount);
             paymentRequest.setAmount(totalAmount);
             paymentRequest.setReceipt("txn" + System.currentTimeMillis());
-
-            //Initiate payment(returns payment url oor token)
-            PaymentResponse paymentResponse = paymentService.processPayment(paymentRequest);
-            String message = "";
-            if (paymentResponse != null) {
-
-                // saving payment details to db
-                handlePaymentSuccess(order.getId(), paymentResponse,mongoOrder);
-
-                //Initiating Shipment
-                Shipment shipment=shipmentService.createShipment(order);
-                //preparing shipmentInfo for mongodb
-                ShipmentInfo shipmentInfo=new ShipmentInfo();
-                shipmentInfo.setShipmentId(shipment.getId());
-                shipmentInfo.setTrackingNumber(shipment.getTrackingNumber());
-                shipmentInfo.setCarrier(shipment.getCarrier());
-                shipmentInfo.setStatus(shipment.getStatus());
-                mongoOrder.setShipment(shipmentInfo);
-
-                order.setShipment(shipment);
-                order.setStatus(Constants.ORDER_STATUS_CREATED);
-                orderRepo.save(order);
-
-                //saving to mongoDb
-                mongoOrder.setOrderId(order.getId());
-                mongoOrder.setPrice(order.getTotalAmount());
-                orderMongoRepository.save(mongoOrder);
-
-                message = "Your order was placed successfully";
-            } else {
-                // Payment Failure scenario
-                handlePaymentFailure(order.getId());
-                message = "Your order was not placed!";
-            }
-            return toOrderResponse(order, message);
+            //Initiate payment
+             return processPaymentAndShipment(paymentRequest,order,mongoOrder);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ServerDownException("Exception occurred while placing order due to: "+e);
         }
+    }
+
+    public OrderResponse processPaymentAndShipment(PaymentRequest paymentRequest, Order order, MongoOrder mongoOrder) throws Exception {
+        PaymentResponse paymentResponse = paymentService.processPayment(paymentRequest);
+        String message = "";
+        if (paymentResponse != null) {
+
+            // saving payment details to db
+            handlePaymentSuccess(order.getId(), paymentResponse,mongoOrder);
+
+            //Initiating Shipment
+            Shipment shipment=shipmentService.createShipment(order);
+            //preparing shipmentInfo for mongodb
+            ShipmentInfo shipmentInfo=new ShipmentInfo();
+            shipmentInfo.setShipmentId(shipment.getId());
+            shipmentInfo.setTrackingNumber(shipment.getTrackingNumber());
+            shipmentInfo.setCarrier(shipment.getCarrier());
+            shipmentInfo.setStatus(shipment.getStatus());
+            mongoOrder.setShipment(shipmentInfo);
+
+            order.setShipment(shipment);
+            order.setStatus(Constants.ORDER_STATUS_SHIPPED);
+            orderRepo.save(order);
+
+            //saving to mongoDb
+//            mongoOrder.setOrderId(order.getId());
+            mongoOrder.setPrice(order.getTotalAmount());
+            orderMongoRepository.save(mongoOrder);
+
+            message = "Your order was placed successfully";
+        } else {
+            // Payment Failure scenario
+            handlePaymentFailure(order.getId());
+            message = "Your order was not placed!";
+        }
+        return toOrderResponse(order, message);
     }
 
     @Transactional
     public void handlePaymentSuccess(Long orderId, PaymentResponse paymentResponse, MongoOrder mongoOrder){
         Order order=orderRepo.findById(orderId).orElseThrow();
-        order.setStatus("PAID");
+        order.setStatus(Constants.ORDER_STATUS_PAID);
         orderRepo.save(order);
-        Payment paymentDetails=new Payment();
-        paymentDetails.setOrder(order);
-        paymentDetails.setGatewayTxnId(paymentResponse.getGatewayTxnId());
-        paymentDetails.setStatus(paymentResponse.getStatus());
-        paymentDetails.setAmount(order.getTotalAmount());
-        paymentDetails.setCreatedAt(new Date().toInstant());
-        // preparing info for mongo
-        PaymentInfo paymentInfo=new PaymentInfo();
-        paymentInfo.setPaymentId(paymentResponse.getGatewayTxnId());
-        paymentInfo.setMethod("Card");
-        paymentInfo.setStatus(paymentResponse.getStatus());
-        paymentInfo.setAmount(order.getTotalAmount());
-        mongoOrder.setPayment(paymentInfo);
+        Optional<Payment> exists=paymentRepo.findByOrderId(orderId);
+        if(exists.isEmpty()) {
+            Payment paymentDetails = new Payment();
+            paymentDetails.setOrder(order);
+            paymentDetails.setGatewayTxnId(paymentResponse.getGatewayTxnId());
+            paymentDetails.setStatus(paymentResponse.getStatus());
+            paymentDetails.setAmount(order.getTotalAmount());
+            paymentDetails.setCreatedAt(new Date().toInstant());
+            // preparing info for mongo
+            PaymentInfo paymentInfo = new PaymentInfo();
+            paymentInfo.setPaymentId(paymentResponse.getGatewayTxnId());
+            paymentInfo.setMethod("Card");
+            paymentInfo.setStatus(paymentResponse.getStatus());
+            paymentInfo.setAmount(order.getTotalAmount());
+            mongoOrder.setPayment(paymentInfo);
 
-        paymentRepo.save(paymentDetails);
+            paymentRepo.save(paymentDetails);
+        }
     }
 
     @Transactional
     public void handlePaymentFailure(Long orderId){
         Order order=orderRepo.findById(orderId).orElseThrow(()->new RecordNotFoundException("order was not found!"));
-        order.setStatus("PAYMENT_FAILED");
+        order.setStatus(Constants.ORDER_STATUS_CREATED);
         orderRepo.save(order);
         // release stock
         List<OrderItem> items=orderItemRepo.findByOrderId(order.getId());
@@ -200,5 +210,10 @@ public class OrderService {
                 .total(order.getTotalAmount())
                 .shipmentTrackingNumber(order.getShipment().getTrackingNumber())
                 .build();
+    }
+
+    public String deleteAllOrders() {
+        orderRepo.deleteAll();
+        return "all orders deleted!";
     }
 }

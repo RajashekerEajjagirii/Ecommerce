@@ -4,8 +4,6 @@ import com.raj.ecommerce.constants.Constants;
 import com.raj.ecommerce.domain.Order;
 import com.raj.ecommerce.domain.Shipment;
 import com.raj.ecommerce.domain.ShipmentTracker;
-import com.raj.ecommerce.domain.mongo.MongoOrder;
-import com.raj.ecommerce.domain.mongo.ShipmentInfo;
 import com.raj.ecommerce.dto.TrackerRequest;
 import com.raj.ecommerce.dto.TrackerResponse;
 import com.raj.ecommerce.exception.BadRequestException;
@@ -39,29 +37,33 @@ public class ShipmentService {
     public Shipment createShipment(Order order) {
         try {
             String trackingNumber = "RETN" + generator.generate12DigitNumber();
+            Optional<Shipment> exists=shipmentRepo.findByOrderId(order.getId());
+            if(exists.isEmpty()) {
+                Shipment shipment = new Shipment();
+                shipment.setOrder(order);
+                shipment.setCarrier(Constants.CARRIER_TYPE);
+                shipment.setTrackingNumber(trackingNumber);
+                shipment.setStatus("CREATED");
+                shipment.setCreatedAt(new Date().toInstant());
+                shipment.setExpectedDelivery(LocalDateTime.now());
 
-            Shipment shipment = new Shipment();
-            shipment.setOrder(order);
-            shipment.setCarrier(Constants.CARRIER_TYPE);
-            shipment.setTrackingNumber(trackingNumber);
-            shipment.setStatus("CREATED");
-            shipment.setCreatedAt(new Date().toInstant());
-            shipment.setExpectedDelivery(LocalDateTime.now());
+                // creating initial tracking event
+                ShipmentTracker trackEvent = new ShipmentTracker();
+                trackEvent.setEventType("Shipment Created");
+                trackEvent.setEventTime(LocalDateTime.now());
+                trackEvent.setTrackingNumber(trackingNumber);
+                trackEvent.setLocation("Warehouse");
+                trackEvent.setRemarks("Tracking number assigned: " + trackingNumber);
 
-            // creating initial tracking event
-            ShipmentTracker trackEvent = new ShipmentTracker();
-            trackEvent.setEventType("Shipment Created");
-            trackEvent.setEventTime(LocalDateTime.now());
-            trackEvent.setTrackingNumber(trackingNumber);
-            trackEvent.setLocation("Warehouse");
-            trackEvent.setRemarks("Tracking number assigned: " + trackingNumber);
+                // Add tracker to shipment (sets FK automatically)
+                shipment.addTrackingEvent(trackEvent);
+                // saving to db
+                shipmentRepo.save(shipment);
+                return shipment;
+            }else{
+                return exists.get();
+            }
 
-            // Add tracker to shipment (sets FK automatically)
-            shipment.addTrackingEvent(trackEvent);
-            // saving to db
-            shipmentRepo.save(shipment);
-
-            return shipment;
         } catch (Exception e) {
             throw new BadRequestException("Exception Occurred while preparing shipment: "+e);
         }

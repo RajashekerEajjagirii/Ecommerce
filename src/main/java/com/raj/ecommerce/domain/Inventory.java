@@ -21,7 +21,7 @@ public class Inventory {
     @JoinColumn(name = "product_id")
     private Product product;
     private String warehouse;
-    private Integer quantity;
+    private Integer stock;
     @Version
     private Integer version;
     // getters/setters

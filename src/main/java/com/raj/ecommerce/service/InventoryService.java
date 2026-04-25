@@ -35,9 +35,9 @@ public class InventoryService {
     public void reserveStock(Long productId, Integer qty) {
         Inventory inv=inventoryRepo.findByProductId(productId)
                 .orElseThrow(()->new RecordNotFoundException("No inventory found"));
-        if(inv.getQuantity()<qty)
+        if(inv.getStock()<qty)
             throw new BadRequestException("Insufficient stock!");
-        inv.setQuantity(inv.getQuantity()-qty);
+        inv.setStock(inv.getStock()-qty);
         inventoryRepo.save(inv);
     }
 
@@ -45,7 +45,7 @@ public class InventoryService {
     public void releaseStock(Long productId, Integer qty) {
         Inventory inv=inventoryRepo.findByProductId(productId)
                 .orElseThrow(()->new RecordNotFoundException("No inventory!"));
-        inv.setQuantity(inv.getQuantity()+qty);
+        inv.setStock(inv.getStock()+qty);
         inventoryRepo.save(inv);
     }
 
@@ -53,7 +53,7 @@ public class InventoryService {
         try{
             Inventory inv=inventoryRepo.findByProductId(productId)
                     .orElseThrow(()->new RecordNotFoundException("No inventory found"));
-            return inv.getQuantity() >= qty;
+            return inv.getStock() >= qty;
         } catch (Exception e) {
             log.error("Stock not available!");
             return false;

@@ -40,6 +40,7 @@ public class Constants {
     public static final String ROLE_TYPE="ROLE_ADMIN";
     public static final Long ROLE_ID=2L;
     public static final String ORDER_STATUS_CREATED="CREATED";
+    public static final String ORDER_STATUS_PAID="PAID";
     public static final String ORDER_STATUS_SHIPPED="SHIPPED";
     public static final String CARRIER_TYPE="FedEX";
 

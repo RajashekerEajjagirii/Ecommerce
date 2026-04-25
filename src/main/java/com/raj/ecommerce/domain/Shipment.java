@@ -1,10 +1,7 @@
 package com.raj.ecommerce.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -17,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Builder
+@ToString(exclude = "order")
 public class Shipment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

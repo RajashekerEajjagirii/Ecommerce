@@ -1,6 +1,14 @@
 spring:
   application:
     name: ecommerce
+  batch:
+    job:
+      # Spring Batch auto-launches jobs at startup by default; keep local/dev startup resilient.
+      # Set `BATCH_JOB_ENABLED=true` to enable.
+      enabled: true
+      allow-start-if-complete: true
+    scheduler:
+      enabled: true
   cache:
     # Default to local in-memory cache so the app works without Redis.
     # Set `SPRING_CACHE_TYPE=redis` to enable Redis-backed caching.
@@ -9,8 +17,9 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    # Keep local/dev startup working even when env vars aren't set.
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -58,13 +67,14 @@ razorpay:
 #  razorpay.key.secret=3i8hADRH1FBawV@Mmc9s6tu4
 # pass it as env variables in edit configuration
 stripe:
-  secret_key: ${secret_key}
-  public_key: ${public_key}
+  secret_key: ${secret_key:}
+  public_key: ${public_key:}
 
 payment:
-  provider: ${payment_provider}
+  # Used by @ConditionalOnProperty checks (e.g. StripeConfig). Must have a default.
+  provider: ${payment_provider:razorpay}
 
 raj-ecommerce:
-  baseUri: ${base_uri}
+  baseUri: ${base_uri:http://localhost:8080}
   accountVerifyUri: /api/auth/verifyAccount/{emailOtp}
   trackDetailsUri: /api/tracking/{trackingNumber}

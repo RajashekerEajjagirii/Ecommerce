@@ -1,4 +1,7 @@
 spring:
+  batch:
+    job:
+      enabled: false
   datasource:
     # Keep tests hermetic: no dependency on a local MySQL instance.
     url: jdbc:h2:mem:ecommerce_test;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
@@ -19,4 +22,3 @@ spring:
 
 payment:
   provider: razorpay
-

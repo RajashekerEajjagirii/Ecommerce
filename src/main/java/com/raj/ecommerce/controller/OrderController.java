@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -37,5 +38,9 @@ public class OrderController {
          * call orderservice.handlePaymentSuccess/Failure
          */
         return ResponseEntity.ok().build();
+    }
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllOrders(){
+       return new ResponseEntity<>(orderService.deleteAllOrders(),HttpStatus.OK);
     }
 }
