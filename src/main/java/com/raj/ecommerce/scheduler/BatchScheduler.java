@@ -1,6 +1,7 @@
 package com.raj.ecommerce.scheduler;
 
 import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.job.parameters.JobParameters;
 import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Component
-@ConditionalOnProperty(name = "batch.scheduler.enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "spring.batch.scheduler", name = "enabled", havingValue = "true")
 public class BatchScheduler {
 
     private final JobLauncher jobLauncher;
@@ -22,17 +23,25 @@ public class BatchScheduler {
         this.processOrdersJob=processOrdersJob;
     }
 
-    @Scheduled(cron = "0 */10 * * * ?")
-    public void runJob() throws Exception{
-        JobParameters params=new JobParametersBuilder()
-                .addLong("run.id",System.currentTimeMillis())
+    @Scheduled(cron = "0 */5 * * * ?")
+    public void runJob() {
+       final JobParameters params=new JobParametersBuilder()
+                .addLong("startAt",System.currentTimeMillis())
                 .toJobParameters();
-        jobLauncher.run(processOrdersJob,params);
+       try{
+           System.out.println("runJob Scheduler fired at " + LocalDateTime.now());
+           final JobExecution jobExecution=jobLauncher.run(processOrdersJob,
+                   params);
+           System.out.println("Batch job status: " + jobExecution.getStatus());
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+
     }
 
-    @Scheduled(cron = "0 */10 * * * ?")
+    @Scheduled(cron = "0 */5 * * * ?")
     public void testLog() {
-        System.out.println("Scheduler fired at " + LocalDateTime.now());
+        System.out.println("testLog Scheduler fired at " + LocalDateTime.now());
     }
 
 }

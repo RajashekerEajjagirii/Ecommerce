@@ -74,7 +74,7 @@ public class BatchConfig {
     @Bean
     public Step processOrdersStep() {
         return new StepBuilder("processOrdersStep", jobRepository)
-                .<Order, ProcessedOrder>chunk(10, transactionManager)
+                .<Order, ProcessedOrder>chunk(2, transactionManager)
                 .reader(orderReader())
                 .processor(orderProcessor())
                 .writer(orderWriter( inventoryRepository, redisTemplate))
@@ -83,12 +83,13 @@ public class BatchConfig {
 
     @Bean
     public ItemReader<Order> orderReader(){
+        System.out.println("order reader executing:");
         return new JpaPagingItemReaderBuilder<Order>()
                 .name("orderReader")
                 .entityManagerFactory(entityManagerFactory)
                 // JPQL/HQL queries entity names, not table names.
                 .queryString("SELECT o FROM Order o where o.status = 'CREATED' ")
-                .pageSize(10)
+                .pageSize(2)
                 .build();
     }
 
