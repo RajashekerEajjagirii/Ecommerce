@@ -1,17 +1,18 @@
 package com.raj.ecommerce.service;
 
 import com.raj.ecommerce.constants.Constants;
-import com.raj.ecommerce.domain.*;
 import com.raj.ecommerce.domain.mongo.MongoOrder;
 import com.raj.ecommerce.domain.mongo.PaymentInfo;
 import com.raj.ecommerce.domain.mongo.ProductInfo;
 import com.raj.ecommerce.domain.mongo.ShipmentInfo;
+import com.raj.ecommerce.domain.primary.*;
 import com.raj.ecommerce.dto.OrderResponse;
 import com.raj.ecommerce.dto.PaymentRequest;
 import com.raj.ecommerce.dto.PaymentResponse;
 import com.raj.ecommerce.exception.RecordNotFoundException;
 import com.raj.ecommerce.exception.ServerDownException;
 import com.raj.ecommerce.repo.*;
+import com.raj.ecommerce.repo.primary.*;
 import com.raj.ecommerce.util.EmailBodyBuildTemplate;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

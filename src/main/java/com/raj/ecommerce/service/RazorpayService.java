@@ -3,14 +3,12 @@ package com.raj.ecommerce.service;
 
 import com.raj.ecommerce.dto.PaymentRequest;
 import com.raj.ecommerce.dto.PaymentResponse;
-import com.raj.ecommerce.repo.PaymentRepository;
+import com.raj.ecommerce.repo.primary.PaymentRepository;
 import com.raj.ecommerce.util.PaymentGateway;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

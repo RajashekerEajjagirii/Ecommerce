@@ -1,10 +1,5 @@
 package com.raj.ecommerce.constants;
 
-import com.raj.ecommerce.domain.Role;
-
-import java.util.HashSet;
-import java.util.Set;
-
 public class Constants {
 
     public Constants() {
@@ -26,7 +21,9 @@ public class Constants {
          "/",
          "/index.html",
          "/favicon.ico",
-         "/error", "/api/tracking/**"
+         "/error", "/api/tracking/**",
+            //H2 db console
+            "/h2-console/**"
     };
 
     public static final String[] USER_ACCESS_ENDPOINTS={

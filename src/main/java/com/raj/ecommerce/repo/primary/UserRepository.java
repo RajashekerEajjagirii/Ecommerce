@@ -1,7 +1,7 @@
-package com.raj.ecommerce.repo;
+package com.raj.ecommerce.repo.primary;
 
-import com.raj.ecommerce.domain.Role;
-import com.raj.ecommerce.domain.User;
+import com.raj.ecommerce.domain.primary.Role;
+import com.raj.ecommerce.domain.primary.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

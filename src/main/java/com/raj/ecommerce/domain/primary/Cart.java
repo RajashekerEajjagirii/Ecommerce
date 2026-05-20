@@ -1,4 +1,4 @@
-package com.raj.ecommerce.domain;
+package com.raj.ecommerce.domain.primary;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;

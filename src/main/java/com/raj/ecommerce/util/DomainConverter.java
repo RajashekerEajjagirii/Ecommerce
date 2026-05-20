@@ -1,11 +1,11 @@
 package com.raj.ecommerce.util;
 
 import com.raj.ecommerce.constants.Constants;
-import com.raj.ecommerce.domain.*;
+import com.raj.ecommerce.domain.primary.*;
 import com.raj.ecommerce.dto.*;
 import com.raj.ecommerce.exception.BadRequestException;
 import com.raj.ecommerce.exception.RecordNotFoundException;
-import com.raj.ecommerce.repo.*;
+import com.raj.ecommerce.repo.primary.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.Set;
 public class DomainConverter {
 
     @Autowired
-    private  RoleRepository roleRepo;
+    private RoleRepository roleRepo;
 
     @Autowired
     private UserRepository userRepository;
@@ -47,7 +47,7 @@ public class DomainConverter {
                 .build();
     }
 
-    public Address addressDtoToAddress(AddressRequest address,Long userId) {
+    public Address addressDtoToAddress(AddressRequest address, Long userId) {
           User userInfo=userRepository.findById(userId).orElseThrow(()-> new RecordNotFoundException("User not found !"));
           return  Address.builder().user(userInfo)
                 .line1(address.getLine1())

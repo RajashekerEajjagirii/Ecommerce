@@ -1,15 +1,15 @@
 package com.raj.ecommerce.service;
 
-import com.raj.ecommerce.domain.Cart;
-import com.raj.ecommerce.domain.CartItem;
-import com.raj.ecommerce.domain.Product;
-import com.raj.ecommerce.domain.User;
+import com.raj.ecommerce.domain.primary.Cart;
+import com.raj.ecommerce.domain.primary.CartItem;
+import com.raj.ecommerce.domain.primary.Product;
+import com.raj.ecommerce.domain.primary.User;
 import com.raj.ecommerce.dto.CartItemResponse;
 import com.raj.ecommerce.exception.RecordNotFoundException;
 import com.raj.ecommerce.exception.ServerDownException;
-import com.raj.ecommerce.repo.CartItemRepository;
-import com.raj.ecommerce.repo.CartRepository;
-import com.raj.ecommerce.repo.ProductRepository;
+import com.raj.ecommerce.repo.primary.CartItemRepository;
+import com.raj.ecommerce.repo.primary.CartRepository;
+import com.raj.ecommerce.repo.primary.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

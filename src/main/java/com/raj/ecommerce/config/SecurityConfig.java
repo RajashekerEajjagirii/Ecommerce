@@ -42,6 +42,8 @@ public class SecurityConfig {
                 // Use the CorsConfigurationSource bean below (needed for browser preflight OPTIONS requests).
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+                // H2 console uses frames; allow same-origin framing (safe for local dev).
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Allow CORS preflight requests through Spring Security.

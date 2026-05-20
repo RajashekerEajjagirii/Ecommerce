@@ -1,6 +1,6 @@
 package com.raj.ecommerce.controller;
 
-import com.raj.ecommerce.domain.Order;
+import com.raj.ecommerce.domain.primary.Order;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;

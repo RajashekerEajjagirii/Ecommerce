@@ -1,6 +1,6 @@
 package com.raj.ecommerce.controller;
 
-import com.raj.ecommerce.domain.User;
+import com.raj.ecommerce.domain.primary.User;
 import com.raj.ecommerce.dto.CartItemRequest;
 import com.raj.ecommerce.security.UserInfoDetailsService;
 import com.raj.ecommerce.service.CartService;

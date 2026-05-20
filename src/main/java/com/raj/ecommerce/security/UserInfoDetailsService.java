@@ -1,8 +1,8 @@
 package com.raj.ecommerce.security;
 
-import com.raj.ecommerce.domain.Role;
-import com.raj.ecommerce.domain.User;
-import com.raj.ecommerce.repo.UserRepository;
+import com.raj.ecommerce.domain.primary.Role;
+import com.raj.ecommerce.domain.primary.User;
+import com.raj.ecommerce.repo.primary.UserRepository;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

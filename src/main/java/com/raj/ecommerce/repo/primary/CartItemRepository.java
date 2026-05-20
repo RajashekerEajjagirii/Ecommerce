@@ -1,6 +1,6 @@
-package com.raj.ecommerce.repo;
+package com.raj.ecommerce.repo.primary;
 
-import com.raj.ecommerce.domain.CartItem;
+import com.raj.ecommerce.domain.primary.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

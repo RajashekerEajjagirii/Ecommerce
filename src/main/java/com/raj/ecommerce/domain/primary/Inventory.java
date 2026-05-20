@@ -1,4 +1,5 @@
-package com.raj.ecommerce.domain;
+package com.raj.ecommerce.domain.primary;
+
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,22 +8,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="payments")
+@Table(name = "inventory")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Builder
-public class Payment {
+public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
-    @JoinColumn(name="order_id")
-    private Order order;
-    private String gatewayTxnId;
-    private String status;
-    private java.math.BigDecimal amount;
-    private java.time.Instant createdAt = java.time.Instant.now();
+    @JoinColumn(name = "product_id")
+    private Product product;
+    private String warehouse;
+    private Integer stock;
+    @Version
+    private Integer version;
     // getters/setters
 }
-

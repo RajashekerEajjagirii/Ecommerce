@@ -1,6 +1,6 @@
 package com.raj.ecommerce.dto;
 
-import com.raj.ecommerce.domain.Order;
+import com.raj.ecommerce.domain.primary.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -3,9 +3,9 @@ spring:
     name: ecommerce
   batch:
     job:
-      # Spring Batch auto-launches jobs at startup by default; keep local/dev startup resilient.
-      # Set `BATCH_JOB_ENABLED=true` to enable.
-      enabled: true
+      # Disable Spring Boot's default JobLauncherApplicationRunner (it requires a single job name when multiple jobs
+      # exist). We provide our own startup runner that launches all local Job beans.
+      enabled: false
       allow-start-if-complete: true
     scheduler:
       enabled: true
@@ -36,9 +36,23 @@ spring:
       database: ecommerce
 
   datasource:
-    url: "jdbc:mysql://localhost:3306/raj?useSSL=false&serverTimezone=UTC"
-    username: root
-    password: password
+    primary:
+      jdbc-url: "jdbc:mysql://localhost:3306/raj?useSSL=false&serverTimezone=UTC"
+      username: root
+      password: password
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+    secondary:
+      jdbc-url: jdbc:h2:mem:secondarydb
+      username: root
+      password: root
+      driver-class-name: org.h2.Driver
+  # Enable H2 Web Console (Optional but helpful)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -78,3 +92,6 @@ raj-ecommerce:
   baseUri: ${base_uri:http://localhost:8080}
   accountVerifyUri: /api/auth/verifyAccount/{emailOtp}
   trackDetailsUri: /api/tracking/{trackingNumber}
+  batch:
+    startup:
+      enabled: true

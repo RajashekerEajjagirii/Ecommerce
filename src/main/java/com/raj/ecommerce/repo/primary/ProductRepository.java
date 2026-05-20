@@ -1,6 +1,6 @@
-package com.raj.ecommerce.repo;
+package com.raj.ecommerce.repo.primary;
 
-import com.raj.ecommerce.domain.Product;
+import com.raj.ecommerce.domain.primary.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

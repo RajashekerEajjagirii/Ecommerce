@@ -1,4 +1,4 @@
-package com.raj.ecommerce.domain;
+package com.raj.ecommerce.domain.primary;
 
 import jakarta.persistence.*;
 import lombok.*;

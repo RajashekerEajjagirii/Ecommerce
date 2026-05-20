@@ -1,7 +1,6 @@
 package com.raj.ecommerce.controller;
 
-import com.raj.ecommerce.domain.Order;
-import com.raj.ecommerce.domain.User;
+import com.raj.ecommerce.domain.primary.User;
 import com.raj.ecommerce.dto.OrderResponse;
 import com.raj.ecommerce.security.UserInfoDetailsService;
 import com.raj.ecommerce.service.OrderService;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")

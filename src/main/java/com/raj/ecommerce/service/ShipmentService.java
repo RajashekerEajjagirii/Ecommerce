@@ -1,16 +1,16 @@
 package com.raj.ecommerce.service;
 
 import com.raj.ecommerce.constants.Constants;
-import com.raj.ecommerce.domain.Order;
-import com.raj.ecommerce.domain.Shipment;
-import com.raj.ecommerce.domain.ShipmentTracker;
+import com.raj.ecommerce.domain.primary.Order;
+import com.raj.ecommerce.domain.primary.Shipment;
+import com.raj.ecommerce.domain.primary.ShipmentTracker;
 import com.raj.ecommerce.dto.TrackerRequest;
 import com.raj.ecommerce.dto.TrackerResponse;
 import com.raj.ecommerce.exception.BadRequestException;
 import com.raj.ecommerce.exception.RecordNotFoundException;
 import com.raj.ecommerce.exception.ServerDownException;
-import com.raj.ecommerce.repo.ShipmentRepository;
-import com.raj.ecommerce.repo.ShipmentTrackerRepo;
+import com.raj.ecommerce.repo.primary.ShipmentRepository;
+import com.raj.ecommerce.repo.primary.ShipmentTrackerRepo;
 import com.raj.ecommerce.util.DomainConverter;
 import com.raj.ecommerce.util.NumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;

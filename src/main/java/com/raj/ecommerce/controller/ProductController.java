@@ -1,6 +1,6 @@
 package com.raj.ecommerce.controller;
 
-import com.raj.ecommerce.domain.Product;
+import com.raj.ecommerce.domain.primary.Product;
 import com.raj.ecommerce.dto.ExceptionResponse;
 import com.raj.ecommerce.dto.ProductRequest;
 import com.raj.ecommerce.dto.ProductResponse;

@@ -1,13 +1,13 @@
 package com.raj.ecommerce.service;
 
-import com.raj.ecommerce.domain.Role;
-import com.raj.ecommerce.domain.User;
+import com.raj.ecommerce.domain.primary.Role;
+import com.raj.ecommerce.domain.primary.User;
 import com.raj.ecommerce.dto.LogInRequest;
 import com.raj.ecommerce.dto.LogInResponse;
 import com.raj.ecommerce.dto.RegisterRequest;
 import com.raj.ecommerce.exception.BadRequestException;
 import com.raj.ecommerce.exception.RecordAlreadyExistsException;
-import com.raj.ecommerce.repo.UserRepository;
+import com.raj.ecommerce.repo.primary.UserRepository;
 import com.raj.ecommerce.security.JwtTokenProvider;
 import com.raj.ecommerce.security.UserInfoDetailsService;
 import com.raj.ecommerce.util.DomainConverter;
@@ -21,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AuthService {

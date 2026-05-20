@@ -1,12 +1,12 @@
 package com.raj.ecommerce.service;
 
-import com.raj.ecommerce.domain.Address;
-import com.raj.ecommerce.domain.User;
+import com.raj.ecommerce.domain.primary.Address;
+import com.raj.ecommerce.domain.primary.User;
 import com.raj.ecommerce.dto.AddressRequest;
 import com.raj.ecommerce.exception.BadRequestException;
 import com.raj.ecommerce.exception.RecordNotFoundException;
-import com.raj.ecommerce.repo.AddressRepo;
-import com.raj.ecommerce.repo.UserRepository;
+import com.raj.ecommerce.repo.primary.AddressRepo;
+import com.raj.ecommerce.repo.primary.UserRepository;
 import com.raj.ecommerce.util.DomainConverter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,11 +1,11 @@
 package com.raj.ecommerce.service;
 
-import com.raj.ecommerce.domain.Product;
+import com.raj.ecommerce.domain.primary.Product;
 import com.raj.ecommerce.dto.ProductRequest;
 import com.raj.ecommerce.dto.ProductResponse;
 import com.raj.ecommerce.exception.BadRequestException;
 import com.raj.ecommerce.exception.RecordNotFoundException;
-import com.raj.ecommerce.repo.ProductRepository;
+import com.raj.ecommerce.repo.primary.ProductRepository;
 import com.raj.ecommerce.util.DomainConverter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

@@ -1,6 +1,5 @@
 package com.raj.ecommerce.controller;
 
-import com.raj.ecommerce.domain.ShipmentTracker;
 import com.raj.ecommerce.dto.TrackerRequest;
 import com.raj.ecommerce.dto.TrackerResponse;
 import com.raj.ecommerce.service.ShipmentService;

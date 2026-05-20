@@ -1,12 +1,18 @@
 package com.raj.ecommerce.config;
 
-import com.raj.ecommerce.domain.Order;
-import com.raj.ecommerce.domain.OrderItem;
+import com.raj.ecommerce.domain.primary.Order;
+import com.raj.ecommerce.domain.primary.OrderItem;
 import com.raj.ecommerce.domain.mongo.MongoOrder;
 import com.raj.ecommerce.domain.mongo.ProductInfo;
+import com.raj.ecommerce.domain.secondary.Person;
 import com.raj.ecommerce.dto.PaymentRequest;
+import com.raj.ecommerce.dto.PersonProcessor;
 import com.raj.ecommerce.dto.ProcessedOrder;
 import com.raj.ecommerce.repo.*;
+import com.raj.ecommerce.repo.primary.InventoryRepository;
+import com.raj.ecommerce.repo.primary.OrderItemRepo;
+import com.raj.ecommerce.repo.primary.OrderRepository;
+import com.raj.ecommerce.repo.secondary.PersonRepository;
 import com.raj.ecommerce.service.InventoryService;
 import com.raj.ecommerce.service.OrderService;
 import jakarta.persistence.EntityManagerFactory;
@@ -22,11 +28,19 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.ItemProcessor;
 import org.springframework.batch.infrastructure.item.ItemReader;
 import org.springframework.batch.infrastructure.item.ItemWriter;
+import org.springframework.batch.infrastructure.item.data.RepositoryItemWriter;
 import org.springframework.batch.infrastructure.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
+import org.springframework.batch.infrastructure.item.file.LineMapper;
+import org.springframework.batch.infrastructure.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.infrastructure.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.batch.infrastructure.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.infrastructure.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -56,6 +70,8 @@ public class BatchConfig {
     private OrderService orderService;
     @Autowired
     private OrderMongoRepository mongoRepository;
+    @Autowired
+    private PersonRepository personRepository;
 
     public BatchConfig(JobRepository jobRepo,PlatformTransactionManager transactionManager,
                        EntityManagerFactory entityManagerFactory){
@@ -172,5 +188,64 @@ public class BatchConfig {
         factoryBean.afterPropertiesSet();
         return factoryBean.getObject();
     }
+
+    @Bean
+    public Job insertPersonsJob(){
+        return new JobBuilder("importPersons",jobRepository)
+                .start(processPersonsStep(jobRepository, transactionManager))
+                .build();
+    }
+
+    @Bean
+    public Step processPersonsStep(JobRepository jobRepository, PlatformTransactionManager transactionManager){
+
+        return new StepBuilder("csv-import-step",jobRepository)
+                .<Person, Person>chunk(10, transactionManager)
+                .reader(csvFileReader())
+                .processor(personProcessor())
+                .writer(writer())
+                .build();
+    }
+
+    @Bean
+    public FlatFileItemReader<Person> csvFileReader(){
+        return new FlatFileItemReaderBuilder<Person>()
+                .name("personCsvReader")
+                .resource(new ClassPathResource("people-1000.csv"))
+                .linesToSkip(1)
+                .lineMapper(lineMapper())
+                .targetType(Person.class)
+                .build();
+    }
+
+    private LineMapper<Person> lineMapper() {
+        DefaultLineMapper<Person> lineMapper = new DefaultLineMapper<>();
+
+        DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
+        lineTokenizer.setDelimiter(",");
+        lineTokenizer.setStrict(false);
+        lineTokenizer.setNames("id", "userId", "firstName", "lastName", "gender", "email", "phone", "dateOfBirth", "jobTitle");
+
+        BeanWrapperFieldSetMapper<Person> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+        fieldSetMapper.setTargetType(Person.class);
+
+        lineMapper.setLineTokenizer(lineTokenizer);
+        lineMapper.setFieldSetMapper(fieldSetMapper);
+
+        return lineMapper;
+    }
+
+    @Bean
+    PersonProcessor personProcessor(){
+        return new PersonProcessor();
+    }
+
+    @Bean
+    RepositoryItemWriter<Person> writer() {
+        RepositoryItemWriter<Person> writer = new RepositoryItemWriter<>(personRepository);
+        writer.setMethodName("save");
+        return writer;
+    }
+
 
 }

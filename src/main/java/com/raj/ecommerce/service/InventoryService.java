@@ -1,10 +1,10 @@
 package com.raj.ecommerce.service;
 
-import com.raj.ecommerce.domain.Inventory;
+import com.raj.ecommerce.domain.primary.Inventory;
 import com.raj.ecommerce.dto.InventoryRequest;
 import com.raj.ecommerce.exception.BadRequestException;
 import com.raj.ecommerce.exception.RecordNotFoundException;
-import com.raj.ecommerce.repo.InventoryRepository;
+import com.raj.ecommerce.repo.primary.InventoryRepository;
 import com.raj.ecommerce.util.DomainConverter;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
